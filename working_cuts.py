@@ -60,4 +60,4 @@ for ld in lds:
 #either be modest, or gargantuan in size. +1 internets if you run the whole shabang
 s = json.dumps(meta)
 with open("/mnt/act3/users/bjm126/" + str(n) + ".txt", "w") as f:
-    f.write(s)
+f.write(s)
