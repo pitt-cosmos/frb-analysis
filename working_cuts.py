@@ -22,18 +22,23 @@ season = "2014"
 #through every set of cuts in the n'th TOD. Not every TOD has cuts in the
 #depot however, so it lets you know if one of the TODs cannot be analyzed in
 #this way.
-for n in range(0, len(ids)):
+#for n in range(0, len(ids)):
+for n in range(0, 50):
     try:
         tod_name = ids[n].basename
+        print(str(n) + ': ' + tod_name)
         tod_dir = fb.filename_from_name(tod_name, single = True)
+        print("Get TOD dir success")
         data = moby2.scripting.get_tod({'filename': tod_dir, 'repair_pointing': True})
+        print("Get TOD success")
         cuts = moby2.scripting.get_cuts({'depot':'/mnt/act3/users/lmaurin/depot','tag':
         'MR1_PA2_2014'},tod = data)
-    
+        print("Get cuts success")
         #list that tores the numbers of all live detectors in a given TOD
         lds = cuts.get_uncut()      
         #The first loop that iterates through every cut in a live detector and appends
         #them to a list that will be added to "meta"
+        print("Generating list of cuts")
 
         for ld in lds:
             temp_list = np.empty((0))
@@ -59,7 +64,14 @@ for n in range(0, len(ids)):
         #Writes everything to a file. Depending on how many TOD's you chose, this will
         #either be modest, or gargantuan in size. +1 internets if you run the whole shabang
         s = json.dumps(meta)
-        with open("/mnt/act3/users/bjm126/" + str(n) + ".txt", "w") as f:
+        with open("outputs/" + str(n) + ".txt", "w") as f:
             f.write(s)
-    except IOError:
-        print("TOD " + str(n) + " has no cuts!")
+        print("File written success")
+    except Exception as e:
+        print(e)
+        if type(e) == IOError:
+            print("TOD " + str(n) + " has no cuts!")
+        elif type(e) == TypeError:
+            print("TOD " + str(n) + " file cannot be found!")
+        else:
+            print(type(e))
