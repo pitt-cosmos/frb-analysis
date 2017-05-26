@@ -66,7 +66,7 @@ for n in range(0, 100):
         s = json.dumps(meta)
         with open("outputs/" + str(n) + ".txt", "w") as f:
             f.write(s)
-        print("File written success")
+        print("File for TOD " + str(n) + " written successfully")
     except Exception as e:
         print(e)
         if type(e) == IOError:
