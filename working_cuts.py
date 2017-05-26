@@ -23,7 +23,7 @@ season = "2014"
 #depot however, so it lets you know if one of the TODs cannot be analyzed in
 #this way.
 #for n in range(0, len(ids)):
-for n in range(0, 50):
+for n in range(0, 100):
     try:
         tod_name = ids[n].basename
         print(str(n) + ': ' + tod_name)
