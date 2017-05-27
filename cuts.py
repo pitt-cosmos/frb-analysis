@@ -33,15 +33,19 @@ class CutReader:
                 print "No cuts found for detector " + key
                 return None
 
-    def get_detectors(self):
+    def get_detectors(self, array = None):
         '''
         Get all detectors that have cuts information
         '''
         if self._cut_data != None:
-            return [key for key in self._cut_data]
+            if array != None:
+                return [int(key) for key in self._cut_data if self._cut_data[key]["array"] == array]
+            else:
+                return [int(key) for key in self._cut_data]
         else:
             print "No cut data loaded. "
             return None
+
     def unloads(self):
         '''
         Free the memory of loaded cuts and close opened files
