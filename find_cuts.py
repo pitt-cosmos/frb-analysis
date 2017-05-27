@@ -28,7 +28,7 @@ season = "2014"
 start = int(sys.argv[1])
 end = int(sys.argv[2])
 for n in range(start, end):
-    meta[n] = []
+    meta = {}
     try:
         tod_name = ids[n].basename
         print(str(n) + ': ' + tod_name)
@@ -63,11 +63,10 @@ for n in range(start, end):
             a = temp_list.reshape((len(temp_list)/2, 2)).tolist()
             #Dictionary entry for detector "ld"
             if temp_list != np.empty((0)):
-                meta[n].append({
-                    'detector' : str(ld),
+                meta[ld] = {
                     'array' : str(ids[ld].array),
                     'cuts' : a
-                })
+                }
         #Writes everything to a file. Depending on how many TOD's you chose, this will
         #either be modest, or gargantuan in size. +1 internets if you run the whole shabang
         s = json.dumps(meta)
