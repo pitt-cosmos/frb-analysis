@@ -60,10 +60,8 @@ for n in range(0, 100):
             #Dictionary entry for detector "ld"
             if temp_list != np.empty((0)):
                 meta[n].append({
-                    'TOD' : str(n),
                     'detector' : str(ld),
                     'array' : str(ids[ld].array),
-                    'season' : season,
                     'cuts' : a
                 })
         #Writes everything to a file. Depending on how many TOD's you chose, this will
