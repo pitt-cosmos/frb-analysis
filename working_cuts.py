@@ -24,6 +24,7 @@ season = "2014"
 #this way.
 #for n in range(0, len(ids)):
 for n in range(0, 100):
+    meta[n] = []
     try:
         tod_name = ids[n].basename
         print(str(n) + ': ' + tod_name)
@@ -43,24 +44,28 @@ for n in range(0, 100):
         for ld in lds:
             temp_list = np.empty((0))
             cut = cuts.cuts[ld]
-            while i < cut.size/2:
+            i = 0
+            while i < len(cut):
                 #this next part calculates the time over which a cut was made
                 calc = cuts.cuts[ld][i][1]-cuts.cuts[ld][i][0]
                 #bound on the calculations to only append the cuts that are at the 
                 #timescale you need. Note 1 unit=2.5 ms
-                if calc < 4:
-                    temp_list.append(cuts.cuts[ld][i])
+                if calc <= 4:
+                    #temp_list.append(cuts.cuts[ld][i])
+                    temp_list = np.append(temp_list, [cuts.cuts[ld][i]])
                 i += 1
-            a = temp_list.tolist()
+
+            # reshape the list to (n x 2) for readabiity
+            a = temp_list.reshape((len(temp_list)/2, 2)).tolist()
             #Dictionary entry for detector "ld"
             if temp_list != np.empty((0)):
-                meta[n] = {
+                meta[n].append({
                     'TOD' : str(n),
                     'detector' : str(ld),
                     'array' : str(ids[ld].array),
                     'season' : season,
                     'cuts' : a
-                }
+                })
         #Writes everything to a file. Depending on how many TOD's you chose, this will
         #either be modest, or gargantuan in size. +1 internets if you run the whole shabang
         s = json.dumps(meta)
@@ -68,10 +73,11 @@ for n in range(0, 100):
             f.write(s)
         print("File for TOD " + str(n) + " written successfully")
     except Exception as e:
-        print(e)
+        #print(e)
         if type(e) == IOError:
             print("TOD " + str(n) + " has no cuts!")
         elif type(e) == TypeError:
             print("TOD " + str(n) + " file cannot be found!")
         else:
+            print(e)
             print(type(e))
