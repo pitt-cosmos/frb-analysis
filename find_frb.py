@@ -101,9 +101,70 @@ def get_unique_detectors(array):
     
     return output_list
 
+# DEBUG
+#find_adjacent_detectors = adjacent_detectors_generator('AR2')
+#find_overlap_detectors = overlap_detectors_generator('AR2')
+#print find_adjacent_detectors(10)
+#print find_overlap_detectors(10)
+#print get_unique_detectors('AR2')
+
+####################
+# Main program
+###################
+
+from cuts import CutReader
+cr = CutReader()
+
+# Work with one TOD for example
+# Load cuts data into memory
+cr.loads_cuts_from_tod(49) 
+
+# Work with one array for example
+# Get list of detectors with cuts of interests
+list_detectors = cr.get_detectors('AR2')
+
+# Generate auxilary functions and list
 find_adjacent_detectors = adjacent_detectors_generator('AR2')
 find_overlap_detectors = overlap_detectors_generator('AR2')
-print find_adjacent_detectors(10)
-print find_overlap_detectors(10)
-print get_unique_detectors('AR2')
+unique_detectors = get_unique_detectors('AR2')
+
+# Find unique detectors with cuts of interests
+unique_detectors_with_cuts = [det for det in unique_detectors if det in list_detectors] 
+
+def find_overlap(cutVec1, cutVec2):
+    '''
+    This function finds the overlap interval between two cut vectors
+    It returns None if there is no overlap
+    '''
+    mi = max(cutVec1[0], cutVec2[0])
+    ma = min(cutVec1[1], cutVec2[1])
+    if mi < ma:
+        return [mi, ma]
+    else:
+        return None
+
+def find_common_cuts(cutList1, cutList2):
+    ''' 
+    Function to return common cuts among two cut lists
+    returns a new cut list
+    '''
+    common_cuts = []
+    for cut1 in cutList1:
+        for cut2 in cutList2:
+            overlap = find_overlap(cut1, cut2)
+            if overlap != None:
+                common_cuts.append(overlap)
+    if not common_cuts: # when the list is empty return None
+        return None
+    return common_cuts
+
+# 1. Filter cuts based on overlaping detectors
+
+cuts = {} # A dictionary to store restuls
+for det in unique_detectors_with_cuts:
+    det_overlap = find_overlap_detectors(det)
+    if det_overlap != None and det_overlap in list_detectors:
+        common_cuts = find_common_cuts(cr.get_cuts(det), cr.get_cuts(det_overlap))
+        if common_cuts != None:
+            cuts[det] = common_cuts
 

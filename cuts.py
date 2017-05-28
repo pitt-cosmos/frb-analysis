@@ -28,7 +28,7 @@ class CutReader:
         else:
             key = str(det)
             if key in self._cut_data:
-                return self._cut_data[key]
+                return self._cut_data[key]['cuts']
             else:
                 print "No cuts found for detector " + key
                 return None
