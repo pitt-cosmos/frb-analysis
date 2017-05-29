@@ -37,7 +37,7 @@ for n in range(start, end):
         data = moby2.scripting.get_tod({'filename': tod_dir, 'repair_pointing': True})
         print("Get TOD success")
         cuts = moby2.scripting.get_cuts({'depot':'/mnt/act3/users/lmaurin/depot','tag':
-        'MR1_PA2_2014'},tod = data)
+        'MR1_PA2_2014_partial'},tod = data)
         print("Get cuts success")
         #list that tores the numbers of all live detectors in a given TOD
         lds = cuts.get_uncut()      

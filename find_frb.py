@@ -138,6 +138,7 @@ print len(list_detectors)
 find_adjacent_detectors = adjacent_detectors_generator('AR2')
 find_overlap_detectors = overlap_detectors_generator('AR2')
 unique_detectors = get_unique_detectors('AR2')
+flatten = lambda l: [item for sublist in l for item in sublist]
 print "Number of unique detectors is "
 print len(unique_detectors)
 
@@ -200,12 +201,14 @@ for det in filtered_detectors:
     for adj_det in unique_adjacent_detectors:
         common_cuts = find_common_cuts(cuts[det], cuts[adj_det])
         if common_cuts != None:
-            all_cuts.append(common_cuts[0])
+            all_cuts.append(common_cuts)
 
     # A unique cut vector in the list will be a signal that we are interested
     all_cuts.sort()
+    #print all_cuts
     uniq = list(k for k, g in itertools.groupby(all_cuts) if len(list(g)) == 1)
+    #print uniq
     if len(uniq) != 0: 
-        signals[det] = uniq
+        signals[det] = flatten(uniq)
 
 print signals
