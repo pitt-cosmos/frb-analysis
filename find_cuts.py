@@ -74,7 +74,6 @@ for n in range(start, end):
             f.write(s)
         print("File for TOD " + str(n) + " written successfully")
     except Exception as e:
-        #print(e)
         if type(e) == IOError:
             print("TOD " + str(n) + " has no cuts!")
         elif type(e) == TypeError:

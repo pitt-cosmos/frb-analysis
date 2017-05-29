@@ -1,5 +1,6 @@
 import numpy as np
 import moby2
+import itertools
 
 ######################
 # Auxilary Functions 
@@ -62,7 +63,9 @@ def overlap_detectors_generator(array):
     overlap_dets = [None] * len(arx) # Generate an empty list to store adjacent detector lists
     for i in range(len(arx)):
         dis = (arx - arx[i])**2 + (ary - ary[i])**2
-        _mask =  (dis == 0) & (det_type == 'tes') # May need to give a range, and it will contain the item itself
+        _mask =  (dis == 0) & (det_type == 'tes') # It will contain the item itself
+                                                  # Only the working detectors are used
+                                                  # STRICT
         mask = _mask.flatten()
         indexes = np.where(mask == True) 
         overlap_location_list = list(list(indexes)[0]) # Normalize the np array output to list
@@ -72,7 +75,7 @@ def overlap_detectors_generator(array):
         overlap_dets[i]= overlap_location_list
     # Generate a function to access the data to make sure above procedures run once only
     def get_overlap_detectors(detector):
-        if overlap_dets[detector]==[]:
+        if not overlap_dets[detector]:
             return None
         else:
             return overlap_dets[detector][0]
@@ -88,6 +91,8 @@ def get_unique_detectors(array):
     amdata = moby2.scripting.get_array_data({'season':'2014', 'array_name': array})
     _mask = (amdata['det_type'] == 'tes')
     mask = _mask.flatten()
+    print "len(mask)"
+    print len(mask)
     indexes = np.where(mask == True)
     input_list = list(list(indexes)[0]) 
     output_list = list(input_list) # Make a copy to input list 
@@ -98,14 +103,18 @@ def get_unique_detectors(array):
         # i_overlap > i is to make sure no double removal occur
         if i_overlap != None and (i_overlap in output_list) and i_overlap > i:
             output_list.remove(i_overlap)
+        elif i_overlap == None: # remove the detector from the list if it's 
+                                # overlapping partner is offline
+                                # STRICT
+            output_list.remove(i)
     
     return output_list
 
 # DEBUG
 #find_adjacent_detectors = adjacent_detectors_generator('AR2')
 #find_overlap_detectors = overlap_detectors_generator('AR2')
-#print find_adjacent_detectors(10)
-#print find_overlap_detectors(10)
+#print find_adjacent_detectors(16)
+#print find_overlap_detectors(16)
 #print get_unique_detectors('AR2')
 
 ####################
@@ -122,11 +131,15 @@ cr.loads_cuts_from_tod(49)
 # Work with one array for example
 # Get list of detectors with cuts of interests
 list_detectors = cr.get_detectors('AR2')
+print "Numbers of detectors from file is "
+print len(list_detectors)
 
 # Generate auxilary functions and list
 find_adjacent_detectors = adjacent_detectors_generator('AR2')
 find_overlap_detectors = overlap_detectors_generator('AR2')
 unique_detectors = get_unique_detectors('AR2')
+print "Number of unique detectors is "
+print len(unique_detectors)
 
 # Find unique detectors with cuts of interests
 unique_detectors_with_cuts = [det for det in unique_detectors if det in list_detectors] 
@@ -160,7 +173,10 @@ def find_common_cuts(cutList1, cutList2):
 
 # 1. Filter cuts based on overlaping detectors
 
-cuts = {} # A dictionary to store restuls
+cuts = {} # A dictionary to store results
+print "Number of unique detectors with cuts is "
+print len(unique_detectors_with_cuts)
+
 for det in unique_detectors_with_cuts:
     det_overlap = find_overlap_detectors(det)
     if det_overlap != None and det_overlap in list_detectors:
@@ -168,3 +184,28 @@ for det in unique_detectors_with_cuts:
         if common_cuts != None:
             cuts[det] = common_cuts
 
+
+# 2. Filter cuts based on adjacent detectors
+signals = {}
+
+# Generate a list of detectors that pass the overlap filter
+filtered_detectors = [int(key) for key in cuts]
+print "Number of detectors passing overlap filter"
+print len(filtered_detectors)
+
+for det in filtered_detectors:
+    all_cuts = []
+    adjacent_detectors = find_adjacent_detectors(det)
+    unique_adjacent_detectors = [ d for d in adjacent_detectors if d in cuts] # remove detectors that are overlapped
+    for adj_det in unique_adjacent_detectors:
+        common_cuts = find_common_cuts(cuts[det], cuts[adj_det])
+        if common_cuts != None:
+            all_cuts.append(common_cuts[0])
+
+    # A unique cut vector in the list will be a signal that we are interested
+    all_cuts.sort()
+    uniq = list(k for k, g in itertools.groupby(all_cuts) if len(list(g)) == 1)
+    if len(uniq) != 0: 
+        signals[det] = uniq
+
+print signals
