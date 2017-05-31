@@ -91,8 +91,6 @@ def get_unique_detectors(array):
     amdata = moby2.scripting.get_array_data({'season':'2014', 'array_name': array})
     _mask = (amdata['det_type'] == 'tes')
     mask = _mask.flatten()
-    print "len(mask)"
-    print len(mask)
     indexes = np.where(mask == True)
     input_list = list(list(indexes)[0]) 
     output_list = list(input_list) # Make a copy to input list 
@@ -126,7 +124,7 @@ cr = CutReader()
 
 # Work with one TOD for example
 # Load cuts data into memory
-cr.loads_cuts_from_tod(49) 
+cr.loads_cuts_from_tod(0) 
 
 # Work with one array for example
 # Get list of detectors with cuts of interests
@@ -211,4 +209,5 @@ for det in filtered_detectors:
     if len(uniq) != 0: 
         signals[det] = flatten(uniq)
 
+print "Signal:"
 print signals

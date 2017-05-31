@@ -8,7 +8,6 @@
 #SBATCH -p act
 #SBATCH --output=logs/0.out                # file for STDOUT 
 #SBATCH --mail-user=yig20@pitt.edu         # Mail  id of the user 
-#SBATCH --mail-type=begin                  # Slurm will send mail at the beginning of the job 
 #SBATCH --mail-type=end                    # Slurm will send at the completion of your job 
 
 python find_cuts.py 0 100
