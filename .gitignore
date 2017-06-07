@@ -103,3 +103,4 @@ ENV/
 outputs/*
 logs/*
 *.py~
+*.swp

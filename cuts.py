@@ -1,4 +1,5 @@
 import json
+import os
 
 class CutReader:
     def __init__(self):
@@ -54,3 +55,18 @@ class CutReader:
             self._f.close()
             self._f = None
         self._cut_data = None
+
+    def get_available_tods(self):
+        '''
+        Get a list of tods that have been processed
+        '''
+        tod_file_list = os.listdir('outputs');
+        
+        # Strip off txt and convert to integer
+        tod_list = [int(f[:-4]) for f in tod_file_list if f.endswith('.txt')]
+
+        # Sort the list
+        tod_list.sort()
+
+        return tod_list
+
