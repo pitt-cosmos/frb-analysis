@@ -108,41 +108,6 @@ def get_unique_detectors(array):
     
     return output_list
 
-# DEBUG
-#find_adjacent_detectors = adjacent_detectors_generator('AR2')
-#find_overlap_detectors = overlap_detectors_generator('AR2')
-#print find_adjacent_detectors(16)
-#print find_overlap_detectors(16)
-#print get_unique_detectors('AR2')
-
-####################
-# Main program
-###################
-
-from cuts import CutReader
-cr = CutReader()
-
-# Work with one TOD for example
-# Load cuts data into memory
-cr.loads_cuts_from_tod(0) 
-
-# Work with one array for example
-# Get list of detectors with cuts of interests
-list_detectors = cr.get_detectors('AR2')
-print "Numbers of detectors from file is "
-print len(list_detectors)
-
-# Generate auxilary functions and list
-find_adjacent_detectors = adjacent_detectors_generator('AR2')
-find_overlap_detectors = overlap_detectors_generator('AR2')
-unique_detectors = get_unique_detectors('AR2')
-flatten = lambda l: [item for sublist in l for item in sublist]
-print "Number of unique detectors is "
-print len(unique_detectors)
-
-# Find unique detectors with cuts of interests
-unique_detectors_with_cuts = [det for det in unique_detectors if det in list_detectors] 
-
 def find_overlap(cutVec1, cutVec2):
     '''
     This function finds the overlap interval between two cut vectors
@@ -170,44 +135,93 @@ def find_common_cuts(cutList1, cutList2):
         return None
     return common_cuts
 
-# 1. Filter cuts based on overlaping detectors
+flatten = lambda l: [item for sublist in l for item in sublist]
 
-cuts = {} # A dictionary to store results
-print "Number of unique detectors with cuts is "
-print len(unique_detectors_with_cuts)
+# DEBUG
+#find_adjacent_detectors = adjacent_detectors_generator('AR2')
+#find_overlap_detectors = overlap_detectors_generator('AR2')
+#print find_adjacent_detectors(16)
+#print find_overlap_detectors(16)
+#print get_unique_detectors('AR2')
 
-for det in unique_detectors_with_cuts:
-    det_overlap = find_overlap_detectors(det)
-    if det_overlap != None and det_overlap in list_detectors:
-        common_cuts = find_common_cuts(cr.get_cuts(det), cr.get_cuts(det_overlap))
-        if common_cuts != None:
-            cuts[det] = common_cuts
+####################
+# Main program
+###################
+
+from cuts import CutReader
+cr = CutReader()
+
+find_adjacent_detectors_AR1 = adjacent_detectors_generator('AR1')
+find_adjacent_detectors_AR2 = adjacent_detectors_generator('AR2')
+find_overlap_detectors_AR1 = overlap_detectors_generator('AR1')
+find_overlap_detectors_AR2 = overlap_detectors_generator('AR2')
+unique_detectors_AR1 = get_unique_detectors('AR1')
+unique_detectors_AR2 = get_unique_detectors('AR2')
+
+arrays = ['AR1', 'AR2']
+# Work with one TOD for example
+# Load cuts data into memory
+cr.loads_cuts_from_tod(0) 
+
+for ar in arrays:
+    # Get list of detectors with cuts of interests
+    list_detectors = cr.get_detectors(ar)
+    print "Numbers of detectors from file is "
+    print len(list_detectors)
+
+    # Generate auxilary functions and list
+    if ar == 'AR1':
+        find_adjacent_detectors = find_adjacent_detectors_AR1
+        find_overlap_detectors = find_overlap_detectors_AR1
+        unique_detectors = unique_detectors_AR1
+    else:
+        find_adjacent_detectors = find_adjacent_detectors_AR2
+        find_overlap_detectors = find_overlap_detectors_AR2
+        unique_detectors = unique_detectors_AR2
+
+    print "Number of unique detectors is "
+    print len(unique_detectors)
+
+    # Find unique detectors with cuts of interests
+    unique_detectors_with_cuts = [det for det in unique_detectors if det in list_detectors] 
+
+    # 1. Filter cuts based on overlaping detectors
+
+    cuts = {} # A dictionary to store results
+    print "Number of unique detectors with cuts is "
+    print len(unique_detectors_with_cuts)
+
+    for det in unique_detectors_with_cuts:
+        det_overlap = find_overlap_detectors(det)
+        if det_overlap != None and det_overlap in list_detectors:
+            common_cuts = find_common_cuts(cr.get_cuts(det), cr.get_cuts(det_overlap))
+            if common_cuts != None:
+                cuts[det] = common_cuts
 
 
-# 2. Filter cuts based on adjacent detectors
-signals = {}
+    # 2. Filter cuts based on adjacent detectors
+    signals = {}
 
-# Generate a list of detectors that pass the overlap filter
-filtered_detectors = [int(key) for key in cuts]
-print "Number of detectors passing overlap filter"
-print len(filtered_detectors)
+    # Generate a list of detectors that pass the overlap filter
+    filtered_detectors = [int(key) for key in cuts]
+    print "Number of detectors passing overlap filter"
+    print len(filtered_detectors)
 
-for det in filtered_detectors:
-    all_cuts = []
-    adjacent_detectors = find_adjacent_detectors(det)
-    unique_adjacent_detectors = [ d for d in adjacent_detectors if d in cuts] # remove detectors that are overlapped
-    for adj_det in unique_adjacent_detectors:
-        common_cuts = find_common_cuts(cuts[det], cuts[adj_det])
-        if common_cuts != None:
-            all_cuts.append(common_cuts)
+    for det in filtered_detectors:
+        all_cuts = []
+        adjacent_detectors = find_adjacent_detectors(det)
+        unique_adjacent_detectors = [ d for d in adjacent_detectors if d in cuts] # remove detectors that are overlapped
+        for adj_det in unique_adjacent_detectors:
+            common_cuts = find_common_cuts(cuts[det], cuts[adj_det])
+            if common_cuts != None:
+                all_cuts.append(common_cuts)
 
-    # A unique cut vector in the list will be a signal that we are interested
-    all_cuts.sort()
-    #print all_cuts
-    uniq = list(k for k, g in itertools.groupby(all_cuts) if len(list(g)) == 1)
-    #print uniq
-    if len(uniq) != 0: 
-        signals[det] = flatten(uniq)
-
-print "Signal:"
-print signals
+        # A unique cut vector in the list will be a signal that we are interested
+        all_cuts.sort()
+        uniq = list(k for k, g in itertools.groupby(all_cuts) if len(list(g)) == 1)
+        if len(uniq) != 0: 
+            signals[det] = flatten(uniq)
+            
+    print ar
+    print "Signal:"
+    print signals
