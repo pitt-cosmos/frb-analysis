@@ -14,11 +14,6 @@ meta = {}
 ld = 0
 i = 0
 
-#Season selection for the sake of the dictionary. However, this doesn't change
-#the season in moby2 or the depot, so you'll have to change those as well both
-#in moby2 and further in the code.
-season = "2014"
-
 #The outer loop iterates through every TOD while the inner loop iterates
 #through every set of cuts in the n'th TOD. Not every TOD has cuts in the
 #depot however, so it lets you know if one of the TODs cannot be analyzed in
