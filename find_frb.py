@@ -160,7 +160,8 @@ unique_detectors_AR1 = get_unique_detectors('AR1')
 unique_detectors_AR2 = get_unique_detectors('AR2')
 arrays = ['AR1', 'AR2']
 
-for tod in cr.get_available_tods()[:5]:
+for tod in cr.get_available_tods():
+#for tod in [50]:
     print "============ TOD: " + str(tod) + " =============="
 # Load cuts data into memory
     cr.loads_cuts_from_tod(tod) 
