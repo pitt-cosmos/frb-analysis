@@ -104,3 +104,5 @@ outputs/*
 logs/*
 *.py~
 *.swp
+
+cuts_fixed_detector/*

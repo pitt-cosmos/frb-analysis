@@ -49,7 +49,7 @@ for n in range(start, end):
             cut = cuts.cuts[ld]
 
             #Dictionary entry for detector "ld"
-            if cut != np.empty((0)):
+            if len(cut) != 0:
                 meta[ld] = {
                     'array' : str(ids[ld].array),
                     'cuts' : cut.tolist()
