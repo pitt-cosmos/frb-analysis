@@ -5,10 +5,10 @@
 #SBATCH -J REPROCESS_CUTS                       # job name 
 #SBATCH -t 90:00:00                        # 90 hours walltime
 #SBATCH --mem=4000MB                       # memory in MB 
-#SBATCH --output=logs/cut_900.out                # file for STDOUT 
+#SBATCH --output=logs/cut_800.out                # file for STDOUT 
 #SBATCH --mail-user=yig20@pitt.edu         # Mail  id of the user 
 #SBATCH --mail-type=end                    # Slurm will send at the completion of your job 
 
-python clustering.py 900 1000
+python clustering.py 800 1000
 
 # end of script 

@@ -11,7 +11,7 @@ class CutReader:
         Loads all cuts data for a specific TOD into memory
         '''
         try:
-            _f = open("outputs/" + str(todId) + ".txt")
+            _f = open("outputs/reprocessed_cuts/" + str(todId) + ".txt")
             self._f = _f
             _data = _f.read()
             _cut_data = json.loads(_data)
@@ -60,7 +60,7 @@ class CutReader:
         '''
         Get a list of tods that have been processed
         '''
-        tod_file_list = os.listdir('outputs');
+        tod_file_list = os.listdir('outputs/reprocessed_cuts');
         
         # Strip off txt and convert to integer
         tod_list = [int(f[:-4]) for f in tod_file_list if f.endswith('.txt')]

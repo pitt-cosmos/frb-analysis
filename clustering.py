@@ -3,7 +3,6 @@ from cuts import CutReader
 import pickle
 #import matplotlib.pyplot as plt
 import sys
-
 def findCuts(hist, low, high=None):
     # Generate masks
     if high:
@@ -21,11 +20,13 @@ def findCuts(hist, low, high=None):
             if not inRange:
                 inRange = True
                 iStart = i
+                iEnd = i
             else:
                 iEnd = i
         else:
-            if inRange:
-                _cuts.append([iStart, iEnd])
+            if inRange or i == len(mask) -1:
+                if iStart != iEnd:
+                    _cuts.append([iStart, iEnd])
             inRange = False
     return _cuts
 
@@ -50,6 +51,22 @@ def plotCuts(data):
     
     return nCutsPerOccurance
 
+def plotCuts2D(data):
+    AR1_cuts = [data[det]['cuts'] for det in data if data[det]['array']=='AR1' and len(data[det]['cuts'])!=0]
+    endTime = max([max(item) for item in AR1_cuts])[1]
+
+    hist = np.zeros(endTime)
+    for cuts in AR1_cuts:
+        for cut in cuts:
+            hist[cut[0]:cut[1]]+=1
+
+    cut_2d = []
+    for i in range(1, int(max(hist))):
+        _cuts = findCuts(hist, i, i+i)
+        cut_2d.append([[i,cut[1]-cut[0]] for cut in _cuts])
+    cuts_2d_flatten = np.array([item for sublist in cut_2d for item in sublist]) 
+    return cuts_2d_flatten
+
 #===================
 # Main body
 #===================
@@ -64,7 +81,7 @@ for tod in tods[istart:iend]:
     print "INFO: Extracting information from tod " + str(tod)
     cr.loads_cuts_from_tod(tod)
     data = cr._cut_data
-    hist = plotCuts(data)
-    with open("cuts_fixed_detector/" + str(tod) + ".dat", "wb") as f:
-        pickle.dump(hist, f)
+    hist2D = plotCuts2D(data)
+    with open("outputs/plot_cuts_hist/" + str(tod) + ".dat", "wb") as f:
+        pickle.dump(hist2D, f)
     print "INFO: File saved!"
