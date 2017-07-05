@@ -26,6 +26,7 @@ for n in range(start, end):
     meta = {}
     try:
         tod_name = ids[n].basename
+        array = ids[n].array
         print(str(n) + ': ' + tod_name)
         tod_dir = fb.filename_from_name(tod_name, single = True)
         print("Get TOD dir success")
@@ -51,7 +52,7 @@ for n in range(start, end):
             #Dictionary entry for detector "ld"
             if len(cut) != 0:
                 meta[ld] = {
-                    'array' : str(ids[ld].array),
+                    'array' : str(array),
                     'cuts' : cut.tolist()
                 }
         #Writes everything to a file. Depending on how many TOD's you chose, this will
