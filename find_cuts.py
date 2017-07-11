@@ -36,7 +36,7 @@ for n in range(start, end):
         # signals that we should look at (unbuffered)
 
         # Define glitch parameters -> note buffer = 0
-        glitchp ={ 'nSig': 10., 'tGlitch' : 0.007, 'minSeparation': 30, 'maxGlitch': 50000, 'highPassFc': 6.0, 'buffer': 0 }
+        glitchp ={ 'nSig': 10, 'tGlitch' : 0.1, 'minSeparation': 30, 'maxGlitch': 50000, 'highPassFc': 6.0, 'buffer': 0 }
         cuts = moby2.tod.get_glitch_cuts(tod=data, params=glitchp)
         print("Get cuts success")
         #list that tores the numbers of all live detectors in a given TOD
