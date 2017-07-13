@@ -106,4 +106,4 @@ logs/*
 *.swp
 
 plots/*
-
+*.png

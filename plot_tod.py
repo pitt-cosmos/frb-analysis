@@ -13,7 +13,7 @@ fb = get_filebase()
 
 # Selection
 TOD = 117
-DET = 41
+DET = 33
 
 # Plot
 tod = ids[TOD]
