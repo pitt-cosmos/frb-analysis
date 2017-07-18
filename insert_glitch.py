@@ -10,6 +10,9 @@ from matplotlib import pyplot as plt
 db = actpol.TODDatabase()
 ids = db.select_tods()
 
+c = 0
+length_list = []
+cut_index = []
 magnitude_list = [10000,15000,20000,25000,30000,35000,40000,45000,50000]
 efficiency_list = []
 
@@ -41,6 +44,11 @@ for n in magnitude_list:
         #Cycles through all the cuts on a detector checking for our signal
         for s in range(0, length_array):            
             if cuts.cuts[d][s][0] <= t <= cuts.cuts[d][s][1]:
+                length = cuts.cuts[d][s][1] - cuts.cuts[d][s][0]
+                cut_index.append(c)
+                c += 1
+                length_list.append(length)
+                print length
                 print n
                 print t
                 detected_cuts += 1
@@ -52,3 +60,9 @@ plt.title('Efficiency vs. Magnitude')
 plt.ylabel('Efficiency of Cut Collection')
 plt.xlabel('Magnitude of Fake Signal')
 plt.savefig('efficiency_vs_magnitude.png', bbox_inches = 'tight')
+
+plt.plot(cut_index, length_list, 'ro')
+plt.title('Lengths of cuts per detected signal')
+plt.ylabel('Length of Cut')
+plt.xlabel('Signal Index')
+plt.savefig('length_of_cuts.png', bbox_inches = 'tight')
