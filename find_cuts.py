@@ -33,12 +33,15 @@ for n in range(start, end):
         # signals that we should look at (unbuffered)
 
         # Define glitch parameters -> note buffer = 0
+        # Test if detrend and remove_mean affect the tod
+        moby2.tod.remove_mean(data)
+        moby2.tod.detrend_tod(data) 
         cuts = moby2.tod.get_glitch_cuts(tod=data, params=glitchp)
         print("Get cuts success")
 
         # Save into pickle file
         meta = {"array": array, "TOD": tod_name, "glitch_param": glitchp, "cuts": cuts}
-        pickle.dump(meta, open("outputs/" + str(n) + ".pickle", "wb"), pickle.HIGHEST_PROTOCOL)
+        pickle.dump(meta, open("outputs/" + str(n) + ".cut", "wb"), pickle.HIGHEST_PROTOCOL)
         print("File for TOD " + str(n) + " written successfully")
     except Exception as e:
         if type(e) == IOError:
