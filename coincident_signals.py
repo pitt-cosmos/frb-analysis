@@ -3,8 +3,7 @@ import math
 import cPickle
 import numpy as np
 ardata = moby2.scripting.get_array_data({'season':'2016', 'array_name':'AR3'})
-cut_meta = cPickle.load(open("outputs/277.cut","rb"))
-cuts = cut_meta['cuts']
+cuts = cPickle.load(open("outputs/277.cut","rb"))
 
 first = lambda x: x[0]
 
