@@ -27,9 +27,16 @@ print hotmap
 
 pr = PixelReader()
 
-x = [pr.getX(int(key)) for key in hotmap]
-y = [pr.getY(int(key)) for key in hotmap]
-z = [hotmap[key] for key in hotmap]
+# Added some filtering
+filtering = 1000000
+x = [pr.getX(int(key)) for key in hotmap if hotmap[key]<filtering]
+y = [pr.getY(int(key)) for key in hotmap if hotmap[key]<filtering]
+z = [hotmap[key] for key in hotmap if hotmap[key]<filtering]
+
+# Generate filtered list
+filtered_key = [key for key in hotmap if hotmap[key]<filtering]
+with open("good_pixel_list.pickle", "wb") as f:
+    cPickle.dump(filtered_key, f)
 
 fig =plt.figure()
 ax = Axes3D(fig)

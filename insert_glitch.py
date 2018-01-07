@@ -40,7 +40,7 @@ for n in magnitude_list:
         total_insertions += 1
 
     print "[INFO] detecting fake signals ... "
-    glitches = get_glitch_cuts(data = tod.data, dets = np.arange(tod.data.shape[0]), tod = tod, params = { 'nSig': 11.0, 'tGlitch' : 0.002, 'minSeparation' : 30, 'maxGlitch' : 50000, 'highPassFc': 5.0, 'buffer' : 0})
+    glitches = get_glitch_cuts(data = tod.data, dets = np.arange(tod.data.shape[0]), tod = tod, params = { 'nSig': 10.0, 'tGlitch' : 0.002, 'minSeparation' : 40, 'maxGlitch' : 50000, 'highPassFc': 5.0, 'buffer' : 0})
     cuts = glitches.extract(0, tod.nsamps)  
     #length_array = len(cuts.cuts[d]) - 1
     for i, t in enumerate(fake_signals):
@@ -72,4 +72,4 @@ result = {
 #plt.xlabel('Successful cut')
 
 #plt.savefig('fake_glitch_stats2.png')
-pickle.dump(result, open("nSig=11.p", "wb"))
+pickle.dump(result, open("minSep=40.p", "wb"))

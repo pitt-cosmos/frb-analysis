@@ -2,10 +2,7 @@ import moby2
 import math
 import cPickle
 import numpy as np
-#import matplotlib
-#matplotlib.use('GTKAgg')
 from pixels import PixelReader
-#from matplotlib import pyplot as plt
 import sys
 
 ardata = moby2.scripting.get_array_data({'season':'2016', 'array_name':'AR3'})
@@ -48,11 +45,6 @@ def common_cuts(cut1, cut2):
     common = moby2.tod.CutsVector.from_mask(mask=cm)
     return common
 
-# Understand the structure of the array_data
-#print ardata
-#for i in range(1056):
-#    print ardata['det_uid'][i], ardata['row'][i], ardata['col'][i], ardata['nom_freq'][i], ardata['pol_family'][i], ardata['array_x'][i], ardata['array_y'][i]
-
 # Get a unique list of lixels
 pr = PixelReader()
 pixels = pr.getPixels()
@@ -62,7 +54,11 @@ nsamps = max([cut[-1][1] for cut in cuts.cuts if len(cut)!=0])
 first = True
 hist = [0]*nsamps
 
-for p in pixels:
+#Get the good pixel list and use it instead of pixels
+good_pixels = cPickle.load(open("good_pixel_list.pickle","rb"))
+bad_pixels = [p for p in pixels if p not in good_pixels]
+# Get the filtered list
+for p in bad_pixels:
     #print '[INFO] Looking at pixel %d ' % p
     det_f90 = []
     det_f150 = []
@@ -130,7 +126,7 @@ def find_peaks(hist):
         last = hist[i]
     return peaks
 
-cPickle.dump(find_peaks(hist), open("outputs/plot_cs_scatter/"+cut_no+".tmp", "wb"),cPickle.HIGHEST_PROTOCOL)
+cPickle.dump(find_peaks(hist), open("outputs/plot_cs_scatter_filter_reverse/"+cut_no+".tmp", "wb"),cPickle.HIGHEST_PROTOCOL)
 #print 'Total number of pixel of interests is:', npix 
 #plt.plot(hist) 
 #plt.show()
