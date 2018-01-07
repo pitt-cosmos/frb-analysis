@@ -13,19 +13,22 @@ fb = get_filebase()
 
 # Selection
 #TOD = 117
-TOD = 2000
-DET = 50
+TOD = 8162
 
 # Plot TOD
 tod = ids[TOD]
 tod_name = tod.basename
-print tod_name
 tod_dir = fb.filename_from_name(tod_name, single=True)
-# The role of repair pointing is not sure
+
 data =moby2.scripting.get_tod({'filename':tod_dir, 'repair_pointing': True})
-#plt.plot(data.ctime, data.data[DET])
+for i in range(len(data.data)):
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.plot(data.ctime[10000:11000], data.data[i][10000:11000])
+    fig.savefig('outputs/plot_tod/' + str(i) + '.png')
 
 
+'''
 # Plot cuts together with TOD
 glitchp ={ 'nSig': 10, 'tGlitch' : 0.007, 'minSeparation': 30, 'maxGlitch': 50000, 'highPassFc': 6.0, 'buffer': 0 }
 
@@ -34,6 +37,7 @@ glitchp ={ 'nSig': 10, 'tGlitch' : 0.007, 'minSeparation': 30, 'maxGlitch': 5000
 cuts = moby2.scripting.get_cuts({'depot':'/mnt/act3/users/lmaurin/depot', 'tag':'MR1_PA2_2014'},tod=data)
 _mask = cuts.cuts[DET].get_mask()
 print cuts.get_cut()
-#plt.plot(data.ctime[_mask], data.data[DET][_mask], 'r-')
-#plt.plot(data.data[DET][~_mask], 'r-')
+plt.plot(data.ctime[_mask], data.data[DET][_mask], 'r-')
+plt.plot(data.data[DET][~_mask], 'r-')
 plt.show()
+'''

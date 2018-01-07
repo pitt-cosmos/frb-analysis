@@ -303,5 +303,11 @@ class PixelReader:
         plt.plot(data['array_x'],data['array_y'],'r.')
         plt.plot(data['array_x'][pixels], data['array_y'][pixels],'b.')
 
-pr = PixelReader()
-print pr.getPixels()
+    def getXY(self, pixel):
+        return [self._array_data['array_x'][pixel], self._array_data['array_y'][pixel]]
+
+    def getX(self, pixel):
+        return self._array_data['array_x'][pixel]
+
+    def getY(self, pixel):
+        return self._array_data['array_y'][pixel]

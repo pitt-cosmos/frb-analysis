@@ -1,5 +1,6 @@
 import json
 import os
+import cPickle
 
 class CutReader:
     def __init__(self):
@@ -10,16 +11,17 @@ class CutReader:
         '''
         Loads all cuts data for a specific TOD into memory
         '''
+        self.unloads()
         try:
-            _f = open("outputs/reprocessed_cuts/" + str(todId) + ".txt")
-            self._f = _f
-            _data = _f.read()
-            _cut_data = json.loads(_data)
+            _f = open("outputs/" + str(todId) + ".cut")
+            _cut_data = cPickle.load(_f)
             self._cut_data = _cut_data
+            return _cut_data['cuts']
         except IOError:
             print "No cuts information available"
+            return None
         
-    def get_cuts(self, det):
+    def get_cuts_from_detector(self, det):
         '''
         Get cuts data for a specific detector (det)
         '''
@@ -28,8 +30,8 @@ class CutReader:
             return None
         else:
             key = str(det)
-            if key in self._cut_data:
-                return self._cut_data[key]['cuts']
+            if key in self._cut_data['cuts'].cuts:
+                return self._cut_data['cuts'].cuts[key]
             else:
                 print "No cuts found for detector " + key
                 return None
@@ -46,6 +48,15 @@ class CutReader:
         else:
             print "No cut data loaded. "
             return None
+    def get_array(self):
+        '''
+        Get array info of the tod loaded
+        '''
+        if self._cut_data:
+            return self._cut_data['array']
+        else:
+            print "No tod loaded"
+            return None
 
     def unloads(self):
         '''
@@ -60,10 +71,10 @@ class CutReader:
         '''
         Get a list of tods that have been processed
         '''
-        tod_file_list = os.listdir('outputs/reprocessed_cuts');
+        tod_file_list = os.listdir('outputs/');
         
         # Strip off txt and convert to integer
-        tod_list = [int(f[:-4]) for f in tod_file_list if f.endswith('.txt')]
+        tod_list = [int(f[:-4]) for f in tod_file_list if f.endswith('.cut')]
 
         # Sort the list
         tod_list.sort()

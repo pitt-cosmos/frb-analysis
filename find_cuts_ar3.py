@@ -9,7 +9,7 @@ fb = get_filebase()
 
 meta = {}
 n = 0
-ardata = moby2.scripting.get_array_dta({'season':'2016', 'array_name': 'AR3'})
+ardata = moby2.scripting.get_array_data({'season':'2016', 'array_name': 'AR3'})
 
 glitchp = {'nSig':10, 'tGlitch':0.007, 'minSeparation': 30, 'maxGlitch': 50000,
     'highPassFc': 6.0, 'buffer':0}
@@ -28,7 +28,7 @@ for n in range(0, len(ids)):
         
         print("Generating list of cuts")
         
-        for det in range(0,1055):
+        for det in range(0,1056):
             cut_array = np.empty((0))
             cut = cuts.cuts[det]
             i = 0

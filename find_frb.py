@@ -158,32 +158,25 @@ find_overlap_detectors_AR1 = overlap_detectors_generator('AR1')
 find_overlap_detectors_AR2 = overlap_detectors_generator('AR2')
 unique_detectors_AR1 = get_unique_detectors('AR1')
 unique_detectors_AR2 = get_unique_detectors('AR2')
-arrays = ['AR1', 'AR2']
 
 for tod in cr.get_available_tods():
 #for tod in [50]:
     print "============ TOD: " + str(tod) + " =============="
 # Load cuts data into memory
-    cr.loads_cuts_from_tod(tod) 
+    cuts = cr.loads_cuts_from_tod(tod) 
+    ar = cr.get_array()
+    # Get auxilary functions and list
+    if ar == 'AR1':
+        find_adjacent_detectors = find_adjacent_detectors_AR1
+        find_overlap_detectors = find_overlap_detectors_AR1
+        unique_detectors = unique_detectors_AR1
+    else:
+        find_adjacent_detectors = find_adjacent_detectors_AR2
+        find_overlap_detectors = find_overlap_detectors_AR2
+        unique_detectors = unique_detectors_AR2
 
-    for ar in arrays:
-        # Get list of detectors with cuts of interests
-        list_detectors = cr.get_detectors(ar)
-        print "Numbers of detectors from file is "
-        print len(list_detectors)
-
-        # Get auxilary functions and list
-        if ar == 'AR1':
-            find_adjacent_detectors = find_adjacent_detectors_AR1
-            find_overlap_detectors = find_overlap_detectors_AR1
-            unique_detectors = unique_detectors_AR1
-        else:
-            find_adjacent_detectors = find_adjacent_detectors_AR2
-            find_overlap_detectors = find_overlap_detectors_AR2
-            unique_detectors = unique_detectors_AR2
-
-        print "Number of unique detectors is "
-        print len(unique_detectors)
+    print "Number of unique detectors is "
+    print len(unique_detectors)
 
         # Find unique detectors with cuts of interests
         unique_detectors_with_cuts = [det for det in unique_detectors if det in list_detectors] 
