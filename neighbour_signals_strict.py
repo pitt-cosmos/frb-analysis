@@ -2,10 +2,7 @@ import moby2
 import math
 import cPickle
 import numpy as np
-#import matplotlib
-#matplotlib.use('GTKAgg')
 from pixels import PixelReader
-#from matplotlib import pyplot as plt
 import sys
 
 ardata = moby2.scripting.get_array_data({'season':'2016', 'array_name':'AR3'})
@@ -47,6 +44,13 @@ def common_cuts(cut1, cut2):
     common = moby2.tod.CutsVector.from_mask(mask=cm)
     return common
 
+def find_one(n):
+    if n==1:
+        return 1
+    else:
+        return 0
+
+vfind_one = np.vectorize(find_one)
 
 # Get a unique list of lixels
 pr = PixelReader()
@@ -125,21 +129,38 @@ for p in coincident_signals:
     adj_pixels = [pix for pix in _adj_pixels if pix in coincident_signals]
 
     _first = True
-    ccs = None
-    if len(adj_pixels)==0: 
+    #if len(adj_pixels)==0: 
+    if len(adj_pixels)<2: 
         print '[INFO] No adjacent pixels, skip'
         continue
 
+    overlap = None
     for ap in adj_pixels:
         cc = common_cuts(coincident_signals[p], coincident_signals[ap])
         if _first:
-            ccs = cc
+            overlap = cc.get_mask(nsamps=nsamps)
             _first = False
         else:
-            ccs = merge_cuts(ccs, cc)
-    hist += cc.get_mask(nsamps=nsamps)
+            overlap += cc.get_mask(nsamps=nsamps)
+    new_mask = vfind_one(overlap)
+    hist += new_mask
 
+def find_nonzero(value):
+    if value>0:
+        return 1
+    else:
+        return 0
 
+vfind_nonzero = np.vectorize(find_nonzero)
+hist_cut = moby2.tod.CutsVector.from_mask(mask=vfind_nonzero(hist))
+peaks = []
+for cut in hist_cut:
+    amp = max(hist[cut[0]: cut[1]])
+    duration = cut[1]-cut[0]
+    peaks.append([duration, amp])
+
+print peaks
+'''
 def find_peaks(hist):
     nsamps = len(hist)
     last = 0
@@ -153,9 +174,12 @@ def find_peaks(hist):
             peak_duration = peak_end - peak_start
             peaks.append([peak_duration, peak_amp])
         last = hist[i]
+    print peaks
     return peaks
 
-cPickle.dump(find_peaks(hist), open("outputs/plot_ns_scatter/"+cut_no+".tmp", "wb"),cPickle.HIGHEST_PROTOCOL)
+cPickle.dump(find_peaks(hist), open("outputs/plot_ns_scatter_strict/"+cut_no+".tmp", "wb"),cPickle.HIGHEST_PROTOCOL)
+'''
+cPickle.dump(peaks, open("outputs/plot_ns_scatter_v2/"+cut_no+".tmp", "wb"),cPickle.HIGHEST_PROTOCOL)
 #print 'Total number of pixel of interests is:', npix 
 #plt.plot(hist) 
 #plt.show()
