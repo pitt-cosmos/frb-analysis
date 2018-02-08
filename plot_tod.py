@@ -26,6 +26,7 @@ for i in range(len(data.data)):
     ax = fig.add_subplot(111)
     ax.plot(data.ctime[10000:11000], data.data[i][10000:11000])
     fig.savefig('outputs/plot_tod/' + str(i) + '.png')
+    print "[INFO] %d saved" % i
 
 
 '''
